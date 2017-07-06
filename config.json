@@ -1,9 +1,9 @@
 {
-    "cmd": "nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader",
+    "threshold": 90,
+    "kill": "tskill ethminer",
     "path": "mine.bat",
     "reboot": "shutdown -r -t 00",
-    "kill": "tskill ethminer",
     "restartApp": 120,
     "rebootRig": 360,
-    "threshold": 90
+    "cmd": "nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader"
 }
