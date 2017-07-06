@@ -7,6 +7,7 @@ var fs = require("fs"),
 
 function util() {
     console.log('\033[2J');
+    console.log('Donations - ETH: 0x00972cd6a2c6786afbcc24ca592b8c86f33f747a / BTC: 1n4ruYy5QWbTDBbPEyBRWwj1Ni4U4Sz5P');
     var child = exec(config.cmd);
     fulldata = "";
     child.stdout.on('data', function(data) {

@@ -30,3 +30,7 @@ Make sure node is installed. For most users, leaving the configuration file as-i
 - Temperature Support / Other Metrics
 - Linux Support
 - AMD Support
+
+## Donations ##
+- ETH: 0x00972cd6a2c6786afbcc24ca592b8c86f33f747a 
+- BTC: 1n4ruYy5QWbTDBbPEyBRWwj1Ni4U4Sz5P
