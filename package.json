@@ -1,0 +1,19 @@
+{
+  "name": "vga-mon",
+  "version": "1.0.0",
+  "description": "Simple GPU monitor for mining rigs.",
+  "main": "monitor.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n4ru/VGA-Mon.git"
+  },
+  "author": "n4ru",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/n4ru/VGA-Mon/issues"
+  },
+  "homepage": "https://github.com/n4ru/VGA-Mon#readme",
+  "dependencies": {
+    "fs": "*"
+  }
+}
