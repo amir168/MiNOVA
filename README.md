@@ -9,7 +9,7 @@ Introduction
 
 ## Installaton / Configuration ##
 
-Make sure node is installed. For most users, leaving the configuration file as-is works fine for use with ethminer. To get up and running, you *must* place the `nvidia-smi.exe` executable in the same directory as VGA-Mon. CUDA drivers come bundled with this application, and it is usually found in `%PROGRAMFILES%\NVIDIA Corporation\NVSMI`. Additionally, you should place a `mine.bat` file in the directory as well for VGA-Mon to restart your miner. Changes can be made to the `config.json` file for advanced users. Running `node monitor` on startup is recommended.
+Make sure node is installed. For most users, leaving the configuration file as-is works fine for use with ethminer. To get up and running, you *must* place the `nvidia-smi.exe` executable in the same directory as VGA-Mon. `nvidia-smi` comes bundled with CUDA drivers, and it is usually found in `%PROGRAMFILES%\NVIDIA Corporation\NVSMI`. Additionally, you should place a `mine.bat` file in the directory as well for VGA-Mon to restart your miner. Changes can be made to the `config.json` file for advanced users. Running `node monitor` on startup is recommended.
 
 `npm install` to install the single dependancy. 
 `node monitor` to start the application.
