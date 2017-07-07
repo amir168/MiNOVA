@@ -4,6 +4,7 @@ Eth-NOVA
 Introduction
 ==
 
+**Eth-NOVA** is an absurdly simple node all-in-one mining application tailored toward Windows / nVidia setups. It will overclock your GPUs, set your power limit, fix P-state, launch your miner, and monitor your mining rig for issues. It is designed to be an AIO application to get started with mining on a Windows nVidia mining rig.
 
 ## Installaton / Configuration ##
 
