@@ -12,11 +12,11 @@ Introduction
 
 ## Installaton / Configuration ##
 
-The default mining configuration is for GTX 1060 GPUs.
+The default mining configuration applies no overclock or p-state changes and sets the power limit to 120W.
 
 Modify the configuration file to your liking. At the very minimum, the `path` should be modified with your wallet information. 
 
-Adding this application to your startup is recommended. If you do so, **make sure it is ran as administrator and is launched from its own directory!**
+Adding this application to your startup is recommended. If you do so, **make sure it is ran as administrator and is launched from its own directory! Turning off UAC is also necessary to ensure application launches run uninterrupted.**
 
 ##### Configuration is as follows: #####
 - `theshold`: Threshold in utilization percent to consider a GPU *idle*.
