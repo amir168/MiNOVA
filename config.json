@@ -1,7 +1,7 @@
 {
     "threshold": 90,
     "kill": "tskill ethminer",
-    "path": ".\\bin\\ethminer --farm-recheck 2000 -U -S eth-us-east1.nanopool.org:9999 -SP 1 -O wallet.name/email --cuda-parallel-hash 4",
+    "path": "\\bin\\ethminer --farm-recheck 2000 -U -S eth-us-east1.nanopool.org:9999 -SP 1 -O wallet.name/email --cuda-parallel-hash 4",
     "reboot": "shutdown -r -t 00",
     "restartApp": 60,
     "rebootRig": 360,

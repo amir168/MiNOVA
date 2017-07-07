@@ -10,17 +10,16 @@ BTC: 1n4ruYy5QWbTDBbPEyBRWwj1Ni4U4Sz5P
 
 */
 
-var fs = require("fs"),
-    fulldata = "",
+var fulldata = "",
     exec = require('child_process').exec,
-    config = require("./config.json"),
+    config = require(process.cwd() + "\\config.json"),
     warn = [],
     restart = 0;
 
 function util() {
     console.log('\033[2J');
     console.log('Donations - ETH: 0x00972cd6a2c6786afbcc24ca592b8c86f33f747a / BTC: 1n4ruYy5QWbTDBbPEyBRWwj1Ni4U4Sz5P');
-    var child = exec(".\\bin\\nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader");
+    var child = exec(process.cwd() + "\\bin\\nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader");
     fulldata = "";
     child.stdout.on('data', function(data) {
         fulldata = fulldata + data
@@ -56,7 +55,7 @@ function util() {
         if (restart == 1) {
             restart = 2;
             exec(config.kill).stdout.on('close', function() {
-                exec("start " + config.path)
+                exec("start " + process.cwd() + config.path)
             })
         }
         setTimeout(util, 1000);
@@ -65,18 +64,18 @@ function util() {
 
 // Set P-State 0
 if (config.p0) {
-    exec(".\\bin\\nvidiasetp0state");
+    exec(process.cwd() + "\\bin\\nvidiasetp0state");
 }
 
 // Overclock the GPU(s) and set power limit
-exec(".\\bin\\nvoc +" + config.core + " +" + config.mem);
-exec(".\\bin\\nvidia-smi --power-limit=" + config.power);
+exec(process.cwd() + "\\bin\\nvoc +" + config.core + " +" + config.mem);
+exec(process.cwd() + "\\bin\\nvidia-smi --power-limit=" + config.power);
 
 // Start the miner
-exec("start " + config.path);
+exec("start " + process.cwd() + config.path)
 
 // Initialize the warn array
-var inits = exec(".\\bin\\nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader");
+var inits = exec(process.cwd() + "\\bin\\nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader");
 var fulldata = "";
 inits.stdout.on('data', function(data) {
     fulldata = fulldata + data
