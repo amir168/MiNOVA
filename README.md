@@ -8,7 +8,7 @@ Eth-NOVA
 Introduction
 ==
 
-**Eth-NOVA** is an absurdly simple node all-in-one mining application tailored toward Windows / nVidia setups. It will overclock your GPUs, set your power limit, fix P-state, launch your miner, and monitor your mining rig for issues. It is designed to be an AIO application to get started with mining on a Windows nVidia mining rig.
+**Eth-NOVA** is an absurdly simple all-in-one mining application tailored toward Windows / nVidia setups. It will overclock your GPUs, set your power limit, fix P-state, launch your miner, and monitor your mining rig for issues. It is designed to be an AIO application to get started with mining on a Windows nVidia mining rig.
 
 ## Installaton / Configuration ##
 
@@ -16,7 +16,7 @@ The default mining configuration applies no overclock or p-state changes and set
 
 Modify the configuration file to your liking. At the very minimum, the `path` should be modified with your wallet information. 
 
-Adding this application to your startup is recommended. If you do so, **make sure it is ran as administrator and is launched from its own directory! Turning off UAC is also necessary to ensure application launches run uninterrupted.**
+Adding this application to your startup is recommended. If you do so, **make sure it is ran as administrator (along with EVERY executable in the binary folder!) and is launched from its own directory! Turning off UAC is also necessary to ensure application launches run uninterrupted.**
 
 ##### Configuration is as follows: #####
 - `theshold`: Threshold in utilization percent to consider a GPU *idle*.
