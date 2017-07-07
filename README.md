@@ -1,35 +1,45 @@
-VGA-Mon
+Eth-NOVA
 =
 
 Introduction
 ==
 
-**VGA-Mon** is an absurdly simple node GPU monitoring app specifically tailored towards monitoring mining rigs. 
-*Currenly, only nVidia / Windows is supported.*
 
 ## Installaton / Configuration ##
 
-Make sure node is installed. For most users, leaving the configuration file as-is works fine for use with ethminer. To get up and running, you *must* place the `nvidia-smi.exe` executable in the same directory as VGA-Mon. `nvidia-smi` comes bundled with CUDA drivers, and it is usually found in `%PROGRAMFILES%\NVIDIA Corporation\NVSMI`. Additionally, you should place a `mine.bat` file in the directory as well for VGA-Mon to restart your miner. Changes can be made to the `config.json` file for advanced users. Running `node monitor` on startup is recommended.
+Make sure node is installed, then just launch `node app` in the directory. Running on startup *as administrator* is recommended in order for the overclocking to properly apply.
 
-`npm install` to install the single dependancy. 
-`node monitor` to start the application.
+Please modify the configuration file to your liking. At the very minimum, the `path` should be modified with your wallet information. 
 
-##### Default configuration is as follows: #####
-- `theshold`: Threshold in utilization percent to consider a GPU *idle*. Default is 90.
-- `kill`: Command to kill your mining process. **Default is `tskill ethminer`**. Modify this if you are not using ethminer!
-- `path`: Path to the script that should be launched when a GPU is idle for too long. Default is `mine.bat`.
-- `reboot`: The command that is executed when a GPU is idle despite miner restart. Default is `shutdown -r -t 00`.
-- `restartApp`: Idle time in cycles (roughly seconds) until the miner process is killed and restarted. Default is 120.
-- `rebootRig`: Idle time in cycles (roughly seconds) until the entire machine is rebooted. Default is 360.
-- `cmd`: *Don't touch this unless you are pointing to a different `nvidia-smi` directory. Data filtering is currently hard-coded.*
+The default mining configuration is for a GTX 1060.
+
+`node app` to start the application.
+
+##### Configuration is as follows: #####
+- `theshold`: Threshold in utilization percent to consider a GPU *idle*.
+- `kill`: Command to kill your mining process. **Modify this if you are not using ethminer!**
+- `path`: Path to the miner that should be launched. **Modify this!**
+- `reboot`: The command that is executed when a GPU is idle despite miner restart.
+- `restartApp`: Idle time in cycles (roughly seconds) until the miner process is killed and restarted.
+- `rebootRig`: Idle time in cycles (roughly seconds) until the entire machine is rebooted.
+- `core`: Core overclock amount in MHz.
+- `mem`: Memory overclock amount in MHz. *This should be **HALF** of what is shown in Afterburner!*
+- `power`: Power Limit in Watts (NOT percentage!).
+
+If you do not trust the packaged binaries, you can replace them with their original sources, as detailed below.
+
+##### Binary Sources #####
+- `etherminer`: Official etherminer release. Link: https://github.com/ethereum-mining/ethminer/releases
+- `nvidia-smi`: Official nVidia CUDA drivers. Link: https://developer.nvidia.com/cuda-downloads
+- `nvidiasetp0state`: Official NiceHash miner release. Link: https://github.com/nicehash/NiceHashMiner/releases
+- `nvoc`: Windows NVOC Port. Link: https://github.com/deathcamp/NVOC/blob/master/nvoc.exe
 
 ### TO-DO ###
 - Event Logging
 - Internet connectivity check
-- Configurator App
-- Temperature Support / Other Metrics
 - Linux Support
 - AMD Support
+- Configurator App
 
 ## Donations ##
 - ETH: 0x00972cd6a2c6786afbcc24ca592b8c86f33f747a 
