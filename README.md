@@ -12,13 +12,11 @@ Introduction
 
 ## Installaton / Configuration ##
 
-Make sure node is installed, then just launch `node app` in the directory. Running on startup *as administrator* is recommended in order for the overclocking to properly apply.
+The default mining configuration is for GTX 1060 GPUs.
 
-Please modify the configuration file to your liking. At the very minimum, the `path` should be modified with your wallet information. 
+Modify the configuration file to your liking. At the very minimum, the `path` should be modified with your wallet information. 
 
-The default mining configuration is for a GTX 1060.
-
-`node app` to start the application.
+Adding this application to your startup is recommended. If you do so, **make sure it is ran as administrator and is launched from its own directory!**
 
 ##### Configuration is as follows: #####
 - `theshold`: Threshold in utilization percent to consider a GPU *idle*.
