@@ -58,7 +58,7 @@ function util() {
                 exec("start " + process.cwd() + config.path)
             })
         }
-        setTimeout(util, 1000);
+        setTimeout(util, config.cycleInterval * 1000);
     });
 }
 
@@ -68,8 +68,10 @@ if (config.p0) {
 }
 
 // Overclock the GPU(s) and set power limit
-exec(process.cwd() + "\\bin\\nvoc +" + config.core + " +" + config.mem);
-exec(process.cwd() + "\\bin\\nvidia-smi --power-limit=" + config.power);
+if (config.mem && config.core)
+    exec(process.cwd() + "\\bin\\nvoc +" + config.core + " +" + config.mem);
+if (config.power)
+    exec(process.cwd() + "\\bin\\nvidia-smi --power-limit=" + config.power);
 
 // Start the miner
 exec("start " + process.cwd() + config.path)

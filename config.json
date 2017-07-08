@@ -5,8 +5,9 @@
     "reboot": "shutdown -r -t 00",
     "restartApp": 60,
     "rebootRig": 360,
-    "core": 0,
-    "mem": 0,
-    "power": 120,
+    "cycleInterval": 1,
+    "core": false,
+    "mem": false,
+    "power": false,
     "p0": false
 }
