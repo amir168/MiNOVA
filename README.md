@@ -34,11 +34,12 @@ Adding this application to your startup is recommended. If you do so, **make sur
 - `kill`: Command to kill your mining process. **Modify this if you are not using ethminer!**
 - `path`: Path to the miner that should be launched. **Modify this!**
 - `reboot`: The command that is executed when a GPU is idle despite miner restart.
-- `restartApp`: Idle time in cycles (roughly seconds) until the miner process is killed and restarted.
-- `rebootRig`: Idle time in cycles (roughly seconds) until the entire machine is rebooted.
-- `core`: Core overclock amount in MHz.
-- `mem`: Memory overclock amount in MHz. *This should be **HALF** of what is shown in Afterburner!*
+- `restartApp`: Idle time in cycles (one second default) until the miner process is killed and restarted.
+- `rebootRig`: Idle time in cycles (one second default) until the entire machine is rebooted.
+- `core`: Core overclock amount in MHz. False to turn off.
+- `mem`: Memory overclock amount in MHz. *This should be **HALF** of what is shown in Afterburner!*. False to turn off.
 - `power`: Power Limit in Watts (NOT percentage!).
+- `cycleInterval`: Time in seconds between "cycles". Default is one second.
 
 If you do not trust the packaged binaries, you can replace them with their original sources, as detailed below.
 
@@ -50,7 +51,6 @@ If you do not trust the packaged binaries, you can replace them with their origi
 
 ### TO-DO ###
 - Event Logging
-- Internet connectivity check
 - Linux Support
 - AMD Support
 - Configurator App
