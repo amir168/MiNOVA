@@ -2,7 +2,7 @@
 <img src="http://i.imgur.com/TMlyY2s.png">
 </p>
 
-Eth-NOVA
+MiNOVA
 =
 
 Introduction
@@ -31,25 +31,18 @@ Adding this application to your startup is recommended. If you do so, **make sur
 
 ##### Configuration is as follows: #####
 - `theshold`: Threshold in utilization percent to consider a GPU *idle*.
-- `kill`: Command to kill your mining process. **Modify this if you are not using ethminer!**
 - `path`: Path to the miner that should be launched. **Modify this!**
 - `reboot`: The command that is executed when a GPU is idle despite miner restart.
 - `restartApp`: Idle time in cycles (one second default) until the miner process is killed and restarted.
 - `rebootRig`: Idle time in cycles (one second default) until the entire machine is rebooted.
 - `core`: Core overclock amount in MHz. False to turn off.
-- `mem`: Memory overclock amount in MHz. *This should be **HALF** of what is shown in Afterburner!*. False to turn off.
+- `mem`: Memory overclock amount in MHz. False to turn off.
 - `power`: Power Limit in Watts (NOT percentage!).
-- `cycleInterval`: Time in seconds between "cycles". Default is one second.
-
-If you do not trust the packaged binaries, you can replace them with their original sources, as detailed below.
-
-##### Binary Sources #####
-- `etherminer`: Official etherminer release. Link: https://github.com/ethereum-mining/ethminer/releases
-- `nvidia-smi`: Official nVidia CUDA drivers. Link: https://developer.nvidia.com/cuda-downloads
-- `nvidiasetp0state`: Official NiceHash miner release. Link: https://github.com/nicehash/NiceHashMiner/releases
-- `nvoc`: Windows NVOC Port. Link: https://github.com/deathcamp/NVOC/blob/master/nvoc.exe
+- `pstate`: Required for some newer cards to always run at full power. False to turn off.
+- `cycleTime`: Time in seconds between "cycles". If you notice the console lags, increase this and decrease your restart/reboot settings proportionally.Default is one second.
 
 ### TO-DO ###
+- Dependency rewrite
 - Event Logging
 - Linux Support
 - AMD Support
