@@ -102,6 +102,7 @@ function switchProfit(initial) {
             currentcoin = coin;
             if (initial) {
                 util();
+            } else if (miner) {
                 miner.kill();
             }
         }
