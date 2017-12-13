@@ -23,11 +23,12 @@ var revision = 1,
     restart = 0,
     justStart = true,
     lastShare = null,
+    lastHash = 0,
     miner = null;
 
 function logo() {
     console.log('\033[2J');
-    console.log("                          MINOVA X r" + revision + " / Mining " + coin + " (Profitability: " + profitability + "%)");
+    console.log("                            MINOVA X / Mining " + coin + " (Profitability: " + profitability + "%)");
     console.log("                                             `          `                                           ");
     console.log("                                          ./yh+`      -sy/`                                         ");
     console.log("                                       `/ydmmmmy.   .smmmmh+s:                                      ");
@@ -99,9 +100,9 @@ function switchProfit(initial) {
     getProfit(function(data) {
         if (currentcoin != coin) {
             currentcoin = coin;
-            if (justStart) {
-                // Start the miner
+            if (initial) {
                 util();
+                miner.kill();
             }
         }
     })
@@ -109,24 +110,30 @@ function switchProfit(initial) {
 
 function doData(data) {
     data = data.toString('utf8');
+    let hashString = "";
+    if (/([0-9]*:[0-9]*:[0-9]*)\|/.test(data))
+        hashString += "[" + data.match(/([0-9]*:[0-9]*:[0-9]*)\|/)[1] + "] ";
     if (/an illegal instruction was encountered/.test(data)) {
+        hashString += "We crashed! Restarting...\nIf you get this often, tweak your overclock settings.";
+        console.log(hashString);
         miner.kill();
     } else if (/Reconnecting/.test(data)) {
-        console.log("Connection dropped. Attempting to reconnect.")
-    } else if (parseInt((Date.now() - lastShare) / 1000) > config.rebootRig && !justStart) {
-        exec(config.reboot);
+        hashString += "Connection dropped. Attempting to reconnect.";
+        console.log(hashString);
     } else if (/Submitted and accepted/.test(data)) {
         lastShare = Date.now();
         justStart = false;
-        console.log("Share submitted and accepted!")
+        hashString += coin + " - Share submitted and accepted!";
+        console.log(hashString);
     } else if (/CUDA ?# ?[0-9]* ?: ?[0-9]*%/.test(data)) {
         let cuda = data.match(/CUDA ?# ?([0-9]*) ?: ?[0-9]*%/)[1];
         let cudaPercent = data.match(/CUDA ?# ?[0-9]* ?: ?([0-9]*)%/)[1];
-        console.log("Generating the DAG... GPU #" + cuda + " - " + cudaPercent + "%");
+        hashString += "Generating the DAG... GPU #" + cuda + " - " + cudaPercent + "%";
+        console.log(hashString);
     } else if (/Speed *\S* Mh\/s/.test(data)) {
         let hashrate = data.match(/Speed *(\S*) Mh\/s/)[1];
-        if (parseInt(hashrate) > 0) {
-            let hashString = "";
+        if (parseInt(hashrate) > 0 && Math.abs((hashrate / lastHash) - 1) > 0.02) {
+            lastHash = hashrate;
             hashString += "Current Hashrate: " + hashrate + " Mh\/s";
             if (config.core > 0)
                 hashString += " / Clock: +" + config.core + "";
@@ -152,7 +159,6 @@ function util() {
         doData(data);
     });
     miner.on('exit', function(code) {
-        console.log("We crashed! Restarting...\nIf you get this often, tweak your overclock settings.");
         miner = null;
         util();
     });
@@ -171,6 +177,12 @@ if (config.power)
 // Set P-State 0
 if (config.pstate)
     exec(process.cwd() + "\\bin\\nvidiasetp0state");
+
+setInterval(function() {
+    if (!justStart && parseInt((Date.now() - lastShare) / 1000) > config.rebootRig) {
+        exec(config.reboot);
+    }
+}, 1000);
 
 logo();
 try {
