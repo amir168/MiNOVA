@@ -11,8 +11,8 @@ BTC: 1n4ruYy5QWbTDBbPEyBRWwj1Ni4U4Sz5P
 */
 
 var revision = 1,
-    fulldata = "",
     exec = require('child_process').exec,
+    spawn = require('child_process').spawn,
     dns = require('dns'),
     request = require('request'),
     config = require(process.cwd() + "\\config.json"),
@@ -20,11 +20,14 @@ var revision = 1,
     currentcoin = "",
     coin = "ETH",
     profitability = 100,
-    restart = 0;
+    restart = 0,
+    justStart = true,
+    lastShare = null,
+    miner = null;
 
 function logo() {
     console.log('\033[2J');
-    console.log("                            MINOVA r" + revision + " / Mining " + coin + " (Profitability: " + profitability + "%)");
+    console.log("                          MINOVA X r" + revision + " / Mining " + coin + " (Profitability: " + profitability + "%)");
     console.log("                                             `          `                                           ");
     console.log("                                          ./yh+`      -sy/`                                         ");
     console.log("                                       `/ydmmmmy.   .smmmmh+s:                                      ");
@@ -40,41 +43,48 @@ function logo() {
     console.log("                                       odmmy:         `/hmmh/                                       ");
     console.log("                                       :yh/`            `+hs.                                       ");
     console.log("                                        ``                `                                         ");
-    console.log('        ETH: 0x00972cd6a2c6786afbcc24ca592b8c86f33f747a / BTC: 1n4ruYy5QWbTDBbPEyBRWwj1Ni4U4Sz5P');
+    //console.log('        ETH: 0x00972cd6a2c6786afbcc24ca592b8c86f33f747a / BTC: 1n4ruYy5QWbTDBbPEyBRWwj1Ni4U4Sz5P');
     console.log();
 }
 
 function getProfit(cb) {
-    if (config.miners.length > 1) {
+    if (Object.keys(config.miners).length > 1) {
         request('http://whattomine.com/coins.json', function(error, response, body) {
             if (error) {
                 // If the API is unreachable, we'll default to Ethereum.
                 coin = "ETH";
                 cb("ETH");
             } else {
-                profits = [];
-                coins = JSON.parse(body);
-                for (x in Object.keys(coins.coins)) {
-                    profit = coins['coins'][Object.keys(coins['coins'])[x]]['profitability24'];
-                    tag = coins['coins'][Object.keys(coins['coins'])[x]]['tag'];
-                    if (Object.keys(config.miners).includes(tag) && !coins['coins'][Object.keys(coins['coins'])[x]]['lagging'] && (profit > 100 || tag == "ETH")) {
-                        profits.push({
-                            name: tag,
-                            profit: profit
-                        })
+                if (body[0] == "{") {
+                    profits = [];
+                    coins = JSON.parse(body);
+                    for (x in Object.keys(coins.coins)) {
+                        profit = coins['coins'][Object.keys(coins['coins'])[x]]['profitability24'];
+                        tag = coins['coins'][Object.keys(coins['coins'])[x]]['tag'];
+                        if (Object.keys(config.miners).includes(tag) && !coins['coins'][Object.keys(coins['coins'])[x]]['lagging'] && (profit > 100 || tag == "ETH")) {
+                            profits.push({
+                                name: tag,
+                                profit: profit
+                            })
+                        }
                     }
+                    profits.sort(function(a, b) {
+                        if (a.profit < b.profit)
+                            return 1;
+                        else
+                            return -1;
+                        return 0;
+                    })
+                    profitability = profits[0].profit;
+                    profits = profits[0].name;
+                    coin = profits;
+                    console.log("Mining " + coin + " - Profitability: " + profitability);
+                    cb(profits);
+                } else {
+                    profitability = "---";
+                    coin = Object.keys(config.miners)[0];
+                    cb(coin);
                 }
-                profits.sort(function(a, b) {
-                    if (a.profit < b.profit)
-                        return 1;
-                    else
-                        return -1;
-                    return 0;
-                })
-                profitability = profits[0].profit;
-                profits = profits[0].name;
-                coin = profits;
-                cb(profits);
             }
         });
     } else {
@@ -85,101 +95,86 @@ function getProfit(cb) {
 }
 
 function switchProfit(initial) {
+    setTimeout(switchProfit, config.profitTime)
     getProfit(function(data) {
         if (currentcoin != coin) {
-            // Kill & start the miner
-            exec(config.kill).stdout.on('close', function() {
-                exec("start " + process.cwd() + config.miners[coin]);
-                currentcoin = coin;
-                if (initial) {
-                    util();
-                }
-            })
+            currentcoin = coin;
+            if (justStart) {
+                // Start the miner
+                util();
+            }
         }
     })
 }
 
-function util() {
-    logo();
-    dns.lookup('google.com', function(err) {
-        if (err && err.code == "ENOTFOUND") {
-            console.log("Waiting for Internet Connection.")
-            setTimeout(util, config.cycleTime * 1000);
-        } else {
-            var child = exec(process.cwd() + "\\bin\\nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader");
-            fulldata = "";
-            child.stdout.on('data', function(data) {
-                fulldata = fulldata + data;
-            });
-            child.stdout.on('close', function(data) {
-                data = JSON.parse(("[ " + fulldata.replace(/\n/g, ", ").replace(/\%/g, '') + "]").replace(", ]", "]"))
-                for (var ind in data) {
-                    // Increment Warn if miner is idle
-                    if (data[ind] < config.threshold) {
-                        warn[ind]++;
-                        console.log("GPU" + ind + " idle for: " + warn[ind] + " cycles");
-                    }
-                    // Reset Warn once the GPU is hashing again
-                    if (data[ind] > config.threshold) {
-                        warn[ind] = 0;
-                    }
-                    // This GPU has been off for too long (hardware probably crashed) - restart the rig
-                    if (warn[ind] >= config.rebootRig) {
-                        exec(config.reboot);
-                    }
-                    // Restart the mining application
-                    if (warn[ind] >= config.restartApp && restart == 0) {
-                        restart = 1;
-                    }
-                }
-                var sum = warn.reduce(function(a, b) {
-                    return a + b;
-                }, 0);
-                // All GPUs are hashing, no restart is pending
-                if (sum == 0)
-                    restart = 0;
-                // Restart the miner
-                if (restart == 1) {
-                    restart = 2;
-                    exec(config.kill).stdout.on('close', function() {
-                        exec("start " + process.cwd() + config.miners[coin]);
-                    })
-                }
-                setTimeout(util, config.cycleTime * 1000);
-                setTimeout(switchProfit, config.profitTime * 1000);
-            });
+function doData(data) {
+    data = data.toString('utf8');
+    if (/an illegal instruction was encountered/.test(data)) {
+        miner.kill();
+    } else if (/Reconnecting/.test(data)) {
+        console.log("Connection dropped. Attempting to reconnect.")
+    } else if (parseInt((Date.now() - lastShare) / 1000) > config.rebootRig && !justStart) {
+        exec(config.reboot);
+    } else if (/Submitted and accepted/.test(data)) {
+        lastShare = Date.now();
+        justStart = false;
+        console.log("Share submitted and accepted!")
+    } else if (/CUDA ?# ?[0-9]* ?: ?[0-9]*%/.test(data)) {
+        let cuda = data.match(/CUDA ?# ?([0-9]*) ?: ?[0-9]*%/)[1];
+        let cudaPercent = data.match(/CUDA ?# ?[0-9]* ?: ?([0-9]*)%/)[1];
+        console.log("Generating the DAG... GPU #" + cuda + " - " + cudaPercent + "%");
+    } else if (/Speed *\S* Mh\/s/.test(data)) {
+        let hashrate = data.match(/Speed *(\S*) Mh\/s/)[1];
+        if (parseInt(hashrate) > 0) {
+            let hashString = "";
+            hashString += "Current Hashrate: " + hashrate + " Mh\/s";
+            if (config.core > 0)
+                hashString += " / Clock: +" + config.core + "";
+            if (config.mem > 0)
+                hashString += " / Memory: +" + config.mem + "";
+            if (config.power)
+                hashString += " / Power: " + config.power + "W";
+            if (lastShare)
+                hashString += " / Last Share: " + parseInt((Date.now() - lastShare) / 1000) + " seconds ago.";
+            console.log(hashString);
         }
+    }
+}
+
+function util() {
+    // Here we spawn the miner and watch it
+    let args = config.miners[coin].split(' ');
+    miner = spawn(process.cwd() + args.splice(0, 1), args);
+    miner.stderr.on('data', function(data) {
+        doData(data);
+    });
+    miner.stdout.on('data', function(data) {
+        doData(data);
+    });
+    miner.on('exit', function(code) {
+        console.log("We crashed! Restarting...\nIf you get this often, tweak your overclock settings.");
+        miner = null;
+        util();
     });
 }
 
 // Overclock the GPU(s) and set power limit
-if (config.mem || config.core) {
+if (config.mem || config.core)
     if (config.mem == false)
-        config.mem = 0
-    if (config.core == false)
-        config.core = 0
-    exec(process.cwd() + "\\bin\\nvoc +" + config.core + " +" + (config.mem / 2));
-}
+        config.mem = 2;
+if (config.core == false)
+    config.core = 0;
+exec(process.cwd() + "\\bin\\nvoc +" + config.core + " +" + (config.mem / 2));
 if (config.power)
     exec(process.cwd() + "\\bin\\nvidia-smi --power-limit=" + config.power);
+
 // Set P-State 0
-if (config.pstate) {
+if (config.pstate)
     exec(process.cwd() + "\\bin\\nvidiasetp0state");
+
+logo();
+try {
+    switchProfit(true);
+} catch (e) {
+    switchProfit(true);
 }
-
-// Initialize the warn array
-var inits = exec(process.cwd() + "\\bin\\nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader");
-var fulldata = "";
-
-inits.stdout.on('data', function(data) {
-    fulldata = fulldata + data;
-});
-
-inits.stdout.on('close', function(data) {
-    data = JSON.parse(("[ " + fulldata.replace(/\n/g, ", ").replace(/\%/g, '') + "]").replace(", ]", "]"))
-    for (x in data) {
-        warn.push(0);
-    }
-})
-
-switchProfit(true);
