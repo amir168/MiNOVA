@@ -56,32 +56,39 @@ function getProfit(cb) {
                 coin = "ETH";
                 cb("ETH");
             } else {
-                if (body[0] == "{") {
-                    profits = [];
-                    coins = JSON.parse(body);
-                    for (x in Object.keys(coins.coins)) {
-                        profit = coins['coins'][Object.keys(coins['coins'])[x]]['profitability24'];
-                        tag = coins['coins'][Object.keys(coins['coins'])[x]]['tag'];
-                        if (Object.keys(config.miners).includes(tag) && !coins['coins'][Object.keys(coins['coins'])[x]]['lagging'] && (profit > 100 || tag == "ETH")) {
-                            profits.push({
-                                name: tag,
-                                profit: profit
-                            })
+                try {
+                    if (body[0] == "{") {
+                        profits = [];
+                        coins = JSON.parse(body);
+                        for (x in Object.keys(coins.coins)) {
+                            profit = coins['coins'][Object.keys(coins['coins'])[x]]['profitability24'];
+                            tag = coins['coins'][Object.keys(coins['coins'])[x]]['tag'];
+                            if (Object.keys(config.miners).includes(tag) && !coins['coins'][Object.keys(coins['coins'])[x]]['lagging'] && (profit > 100 || tag == "ETH")) {
+                                profits.push({
+                                    name: tag,
+                                    profit: profit
+                                })
+                            }
                         }
+                        profits.sort(function(a, b) {
+                            if (a.profit < b.profit)
+                                return 1;
+                            else
+                                return -1;
+                            return 0;
+                        })
+                        profitability = profits[0].profit;
+                        profits = profits[0].name;
+                        coin = profits;
+                        console.log("Mining " + coin + " - Profitability: " + profitability);
+                        cb(profits);
+                    } else {
+                        profitability = "---";
+                        coin = Object.keys(config.miners)[0];
+                        cb(coin);
                     }
-                    profits.sort(function(a, b) {
-                        if (a.profit < b.profit)
-                            return 1;
-                        else
-                            return -1;
-                        return 0;
-                    })
-                    profitability = profits[0].profit;
-                    profits = profits[0].name;
-                    coin = profits;
-                    console.log("Mining " + coin + " - Profitability: " + profitability);
-                    cb(profits);
-                } else {
+                } catch (e) {
+                    // Just default to ETH if we crash
                     profitability = "---";
                     coin = Object.keys(config.miners)[0];
                     cb(coin);
