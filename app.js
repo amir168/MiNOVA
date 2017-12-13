@@ -96,9 +96,9 @@ function getProfit(cb) {
 }
 
 function switchProfit(initial) {
-    setTimeout(switchProfit, config.profitTime)
+    setTimeout(switchProfit, config.profitTime * 1000)
     getProfit(function(data) {
-        if (currentcoin != coin) {
+        if (currentcoin != coin || !miner) {
             currentcoin = coin;
             if (initial) {
                 util();
