@@ -24,7 +24,8 @@ var revision = 1,
     justStart = true,
     lastShare = null,
     lastHash = 0,
-    miner = null;
+    miner = null,
+    activeTimeout = null;
 
 function logo() {
     console.log('\033[2J');
@@ -44,7 +45,6 @@ function logo() {
     console.log("                                       odmmy:         `/hmmh/                                       ");
     console.log("                                       :yh/`            `+hs.                                       ");
     console.log("                                        ``                `                                         ");
-    //console.log('        ETH: 0x00972cd6a2c6786afbcc24ca592b8c86f33f747a / BTC: 1n4ruYy5QWbTDBbPEyBRWwj1Ni4U4Sz5P');
     console.log();
 }
 
@@ -103,7 +103,8 @@ function getProfit(cb) {
 }
 
 function switchProfit(initial) {
-    setTimeout(switchProfit, config.profitTime * 1000)
+    clearTimeout(activeTimeout);
+    activeTimeout = setTimeout(switchProfit, config.profitTime * 1000);
     getProfit(function(data) {
         if (currentcoin != coin || !miner) {
             currentcoin = coin;
